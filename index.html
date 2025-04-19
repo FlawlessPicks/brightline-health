@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Brightline Health Collectibles</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #f2f4f7;
+      color: #1a1a1a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      font-size: 2em;
+      color: #0f62fe;
+    }
+
+    .badge {
+      background: #fff;
+      border: 2px solid #0f62fe;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px 0;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+    }
+
+    .badge h2 {
+      margin: 0 0 10px;
+      font-size: 1.4em;
+      color: #0f62fe;
+    }
+
+    .badge p {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Brightline Health Collectibles</h1>
+  <div id="collectibles"></div>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDmkA0QAJT_1YTRGZm1Xs9B9FVlAqQWomE",
+      authDomain: "brightline-health.firebaseapp.com",
+      projectId: "brightline-health",
+      storageBucket: "brightline-health.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const container = document.getElementById('collectibles');
+
+    async function loadCollectibles() {
+      const querySnapshot = await getDocs(collection(db, "healthCollectibles"));
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const card = document.createElement('div');
+        card.className = 'badge';
+        card.innerHTML = `
+          <h2>${data.title || "Unnamed Collectible"}</h2>
+          <p><strong>Issued by:</strong> ${data.hospital || "Unknown Hospital"}</p>
+          <p><strong>Description:</strong> ${data.description || "No description provided."}</p>
+          <p><strong>Date:</strong> ${new Date(data.timestamp?.seconds * 1000).toLocaleDateString() || "N/A"}</p>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    loadCollectibles();
+  </script>
+</body>
+</html>
